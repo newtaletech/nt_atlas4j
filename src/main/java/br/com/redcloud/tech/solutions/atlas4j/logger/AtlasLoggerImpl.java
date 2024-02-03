@@ -1,5 +1,7 @@
 package br.com.redcloud.tech.solutions.atlas4j.logger;
 
+import br.com.redcloud.tech.solutions.atlas4j.logger.dto.LogData;
+
 public class AtlasLoggerImpl extends Atlas implements AtlasLogger {
 	public AtlasLoggerImpl() {
 		
@@ -16,8 +18,8 @@ public class AtlasLoggerImpl extends Atlas implements AtlasLogger {
 	}
 	
 	@Override
-	public void error(String message, Exception e) {
-		errorAndApplyConfig(message, e);
+	public LogData error( String message, Exception e ) {
+		return errorAndApplyConfig(message, e);
 	}
 	
 	@Override
