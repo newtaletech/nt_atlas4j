@@ -17,20 +17,22 @@ public class Teste
 		AtlasLogger log = AtlasLoggerFactory.getLogger( config, Teste.class );
 		
 		String ttl = "Teste de geração de relatório de erro no formato PDF";
-		byte[] pdf = GeradorRelatorio.geraPDF( log.error( "Esse é um teste de erro." , 
-				new Exception( "Erro mto doido" ) ), ttl );
+		log.error( "Esse é um teste de erro." , new Exception( "Erro mto doido" ) );
 		
-		// Comandos do cliente 
-		String path = "relatorio.pdf";
-		try( FileOutputStream fos = new FileOutputStream( new File( path ) ) )
-		{
-			fos.write( pdf );
-		}
-		catch( IOException e )
-		{
-			e.printStackTrace( );
-		}
-		
-		System.out.println( "Arquivo de relatório pdf gerado com sucesso!" );
+//		byte[] pdf = GeradorRelatorio.geraPDF( log.error( "Esse é um teste de erro." , 
+//				new Exception( "Erro mto doido" ) ), ttl );
+//		
+//		// Comandos do cliente 
+//		String path = "relatorio.pdf";
+//		try( FileOutputStream fos = new FileOutputStream( new File( path ) ) )
+//		{
+//			fos.write( pdf );
+//		}
+//		catch( IOException e )
+//		{
+//			e.printStackTrace( );
+//		}
+//		
+//		System.out.println( "Arquivo de relatório pdf gerado com sucesso!" );
 	}
 }

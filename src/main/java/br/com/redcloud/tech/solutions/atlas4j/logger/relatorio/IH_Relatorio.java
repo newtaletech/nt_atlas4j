@@ -42,7 +42,8 @@ public class IH_Relatorio
 	private static Relatorio fabricaRelatorio( String titulo )
 	{
 		Relatorio rel;
-		switch ( S_REL_DEFAUTL_VER ) {
+		switch ( S_REL_DEFAUTL_VER ) 
+		{
 		case RelV1p0:
 			rel = new RelV1p0( titulo );
 			break;

@@ -19,7 +19,10 @@ import br.com.redcloud.tech.solutions.atlas4j.logger.dto.RelatorioData;
 public class RelV1p0 extends Relatorio
 {
 	private static final String S_LB_RELNAME = "Nome do relatório:",
-			                    S_LB_RELDATA = "Data de emissão:";
+			                    S_LB_RELDATA = "Data de emissão:"  ,
+			                    S_LB_RELMSG  = "Mensagem de erro:" ;
+	
+	private static LogData m_logData;
 	
 	public RelV1p0( )
 	{
@@ -34,12 +37,13 @@ public class RelV1p0 extends Relatorio
 	@Override
 	public RelatorioData geraPDF( LogData ld ) 
 	{
+		this.m_logData = ld;
+		
 		RelatorioData relData  = new RelatorioData( );
 		relData.setM_relNome   ( m_relNome          );
 		relData.setM_relLogData( ld                 );
 		
 		Document  docPDF = new Document( );
-		Paragraph p;
 
 		ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream( );
 		
@@ -49,9 +53,9 @@ public class RelV1p0 extends Relatorio
 
 			docPDF.open( );
 
-			docPDF.add( p = new Paragraph( S_LB_RELNAME + " " + ld.getLogErrMsg( ) )       );
-			docPDF.add( p = new Paragraph( S_LB_RELDATA + " " + ld.getLogErrTimestamp( ) ) );
-			
+			montaCabecalho( docPDF );
+
+			 
 
 		} catch ( DocumentException e ) 
 		{
@@ -65,5 +69,14 @@ public class RelV1p0 extends Relatorio
 		return relData;
 	}
 	
+	
+	private void montaCabecalho( Document docPDF )
+	{
+		Paragraph p;
+		
+		docPDF.add( p = new Paragraph( S_LB_RELNAME + " " + m_relNome )                       );
+		docPDF.add( p = new Paragraph( S_LB_RELDATA + " " + m_logData.getLogErrTimestamp( ) ) );
+		docPDF.add( p = new Paragraph( S_LB_RELMSG  + " " + m_logData.getLogErrMsg( ) )       );
+	}
 
 }
