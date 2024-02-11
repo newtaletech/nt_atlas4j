@@ -4,20 +4,36 @@
 
 package br.com.redcloud.tech.solutions.atlas4j.logger.dto;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class LogData 
 {
+	private String              m_logErrID;
 	private String              m_logErrMsg;
 	private String 				m_logErrTtl;
 	private StackTraceElement[] m_logErrTrace;
 	private LocalDate           m_logErrDt;
 	private LocalTime           m_logErrTm;
-	
+	private String              m_logErrTarget;
+	private String              m_logErrCallMethod;
+	private Throwable           m_logErrThrowable;
+
 	public LogData( )
 	{
 		super( );
+	}
+	
+	public String getM_logErrID( ) 
+	{
+		return m_logErrID;
+	}
+
+	public void setM_logErrID( String m_logErrID )
+	{
+		this.m_logErrID = m_logErrID;
 	}
 	
 	public String getLogErrMsg( ) 
@@ -60,12 +76,44 @@ public class LogData
 		this.m_logErrTm = m_logErrTm;
 	}
 
-	public String getM_logErrTtl() {
+	public String getM_logErrTtl( ) 
+	{
 		return m_logErrTtl;
 	}
 
-	public void setM_logErrTtl(String m_logErrTtl) {
+	public void setM_logErrTtl( String m_logErrTtl ) 
+	{
 		this.m_logErrTtl = m_logErrTtl;
+	}	
+	
+	public String getM_logErrTarget( )  
+	{
+		return m_logErrTarget;
+	}
+
+	public void setM_logErrTarget( String m_logErrTarget )
+	{
+		this.m_logErrTarget = m_logErrTarget;
+	}
+	
+	public String getM_logErrCallMethod( ) 
+	{
+		return m_logErrCallMethod;
+	}
+
+	public void setM_logErrCallMethod( String m_logErrCallMethod )
+	{
+		this.m_logErrCallMethod = m_logErrCallMethod;
+	}
+	
+	public Throwable getM_logErrThrowable( ) 
+	{
+		return m_logErrThrowable;
+	}
+
+	public void setM_logErrThrowable( Throwable m_logErrThrowable ) 
+	{
+		this.m_logErrThrowable = m_logErrThrowable;
 	}
 
 	public String getLogErrTimestamp( )
@@ -88,5 +136,12 @@ public class LogData
 		LocalTime tm = this.m_logErrTm;
 		String format = tm.getHour( ) + ":" + tm.getMinute( );
 		return format;
+	}
+	
+	public String getLogErrStackTraceInString( )
+	{
+		StringWriter sw = new StringWriter( );
+		m_logErrThrowable.printStackTrace( new PrintWriter( sw ) );
+		return sw.toString( );
 	}
 }

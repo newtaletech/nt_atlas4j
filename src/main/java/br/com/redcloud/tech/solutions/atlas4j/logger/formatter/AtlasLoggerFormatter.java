@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import br.com.redcloud.tech.solutions.atlas4j.logger.dto.LogData;
 import br.com.redcloud.tech.solutions.atlas4j.logger.enumlog.LogColor;
 import br.com.redcloud.tech.solutions.atlas4j.logger.enumlog.LogLevel;
 
@@ -20,7 +21,7 @@ public abstract class AtlasLoggerFormatter {
 	}	
 	
 	/**
-	 * Criar método na interface AtlasLogger e implementar na classe AtlasLoggerImpl
+	 * Criar mï¿½todo na interface AtlasLogger e implementar na classe AtlasLoggerImpl
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLogger
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLoggerImpl
 	 * */
@@ -29,7 +30,7 @@ public abstract class AtlasLoggerFormatter {
 	}
 	
 	/**
-	 * Criar método na interface AtlasLogger e implementar na classe AtlasLoggerImpl
+	 * Criar mï¿½todo na interface AtlasLogger e implementar na classe AtlasLoggerImpl
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLogger
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLoggerImpl
 	 * */
@@ -38,12 +39,12 @@ public abstract class AtlasLoggerFormatter {
 	}
 	
 	/**
-	 * Criar método na interface AtlasLogger e implementar na classe AtlasLoggerImpl
+	 * Criar mï¿½todo na interface AtlasLogger e implementar na classe AtlasLoggerImpl
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLogger
 	 * @see br.com.redcloud.tech.solutions.atlas4j.logger.AtlasLoggerImpl
 	 * */
-	public static void logError(String message, Class<?> classTarget, Exception e) {
-		formatError(message, LogLevel.LEVEL_ERROR, e, classTarget);
+	public static void logError(String message, Class<?> classTarget, Exception e, LogData ld ) {
+		formatError(message, LogLevel.LEVEL_ERROR, e, classTarget, ld);
 	}
 	
 	
@@ -68,10 +69,10 @@ public abstract class AtlasLoggerFormatter {
 		}
 	}
 	
-	private static void log(LogLevel level, String message, Class<?> classTarget, Exception e) {
+	private static void log(LogLevel level, String message, Class<?> classTarget, Exception e, LogData ld) {
 		switch (level) {
 		case LEVEL_ERROR:
-			formatError(message, level, e, classTarget);
+			formatError(message, level, e, classTarget, ld);
 			break;
 		default:
 			// joker
@@ -80,7 +81,7 @@ public abstract class AtlasLoggerFormatter {
 	}
 	
 	/**
-	 * Separar o código padrão de exibição de mensagem da configuração de cor.
+	 * Separar o cï¿½digo padrï¿½o de exibiï¿½ï¿½o de mensagem da configuraï¿½ï¿½o de cor.
 	 * */
 	private static void formatInfo(String message, LogLevel levelParam, Class<?> classTarget) {
 		String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMATTER);
@@ -139,8 +140,9 @@ public abstract class AtlasLoggerFormatter {
 	}
 	
 	
-	private static void formatError(String message, LogLevel levelParam, Exception e, Class<?> classTarget) {
-		String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMATTER);
+	private static void formatError(String message, LogLevel levelParam, Exception e, Class<?> classTarget, LogData ld) {
+		LocalDateTime dateTime = LocalDateTime.now();
+		String timestamp = dateTime.format(TIMESTAMP_FORMATTER);
 		String color = getIdealColor(levelParam);
 		String resetColor = LogColor.ANSI_RESET.getColorCode();
 		String level = "ERROR";
@@ -148,6 +150,7 @@ public abstract class AtlasLoggerFormatter {
 		String className = classTarget.getSimpleName();
 		String fullClassPath =  classPackage + "." + className; 
 		String randomLogId = generateRandomLogId();
+		String callingMethodName = getCallingMethodNameToErrorLog() + "()";
 		
 		
 		String classColor = LogColor.ANSI_DEEP_PURPLE.getColorCode();
@@ -165,6 +168,14 @@ public abstract class AtlasLoggerFormatter {
 		
 		System.out.println(logEntry);
 		e.printStackTrace();
+		
+		ld.setM_logErrID        ( randomLogId             );
+		ld.setLogErrDt          ( dateTime.toLocalDate( ) );
+		ld.setLogErrTm          ( dateTime.toLocalTime( ) );
+		ld.setLogErrTrace       ( e.getStackTrace( )      );
+		ld.setM_logErrTarget    ( fullClassPath           );
+		ld.setM_logErrCallMethod( callingMethodName       );
+		ld.setM_logErrThrowable ( e                       );
 	}
 	
 	
@@ -249,7 +260,11 @@ public abstract class AtlasLoggerFormatter {
 	
 	private static String getCallingMethodName() {
 		StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-
-		return stacks[CALLING_METHOD_NAME_INDEX].getMethodName();
+		return stacks[stacks.length - 2].getMethodName();
+	}
+	
+	private static String getCallingMethodNameToErrorLog() {
+		StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
+		return stacks[stacks.length - 1].getMethodName();
 	}
 }

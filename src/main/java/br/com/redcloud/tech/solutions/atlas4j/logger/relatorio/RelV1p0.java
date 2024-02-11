@@ -4,14 +4,15 @@
 
 package br.com.redcloud.tech.solutions.atlas4j.logger.relatorio;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
-import com.lowagie.text.Document;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
 
 import br.com.redcloud.tech.solutions.atlas4j.logger.dto.LogData;
 import br.com.redcloud.tech.solutions.atlas4j.logger.dto.RelatorioData;
@@ -43,40 +44,32 @@ public class RelV1p0 extends Relatorio
 		relData.setM_relNome   ( m_relNome          );
 		relData.setM_relLogData( ld                 );
 		
-		Document  docPDF = new Document( );
-
 		ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream( );
 		
-		try 
+		try
 		{
-			PdfWriter pdfWriter = PdfWriter.getInstance( docPDF, byteArrayOS );
-
-			docPDF.open( );
-
-			montaCabecalho( docPDF );
-
-			 
-
-		} catch ( DocumentException e ) 
-		{
-			e.printStackTrace( );
+			PdfReader pdfReader = new PdfReader( 
+					"report" + File.separator + 
+					"template" + File.separator + 
+					"atlas-error-report-v01p01-template.pdf" );
+			
+			PdfStamper stamper = new PdfStamper( pdfReader, byteArrayOS );
+			
+			addParameters( stamper, ld );
+			
+			pdfReader.close( );
 		}
-		docPDF.close( );
+		catch( IOException | DocumentException e  )
+		{
+			if( e instanceof FileNotFoundException )
+				System.err.println( "Erro ao achar o arquivo de template." );
+		}
+
 		
 		byte[] pdfBytes = byteArrayOS.toByteArray( );
 		relData.setM_relFile( pdfBytes );
-		
+
 		return relData;
-	}
-	
-	
-	private void montaCabecalho( Document docPDF )
-	{
-		Paragraph p;
-		
-		docPDF.add( p = new Paragraph( S_LB_RELNAME + " " + m_relNome )                       );
-		docPDF.add( p = new Paragraph( S_LB_RELDATA + " " + m_logData.getLogErrTimestamp( ) ) );
-		docPDF.add( p = new Paragraph( S_LB_RELMSG  + " " + m_logData.getLogErrMsg( ) )       );
 	}
 
 }

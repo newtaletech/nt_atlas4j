@@ -36,12 +36,8 @@ public abstract class Atlas
 		LogData ld = new LogData( );
 		if( !disableConsole )
 		{
-			AtlasLoggerFormatter.logError( message, targetClass, e );
-			
+			AtlasLoggerFormatter.logError( message, targetClass, e, ld );		
 			ld.setLogErrMsg( message              );
-			ld.setLogErrTrace( e.getStackTrace( ) );
-			ld.setLogErrDt( LocalDate.now( )      );
-			ld.setLogErrTm( LocalTime.now( )      );
 		}
 		
 		return ld;

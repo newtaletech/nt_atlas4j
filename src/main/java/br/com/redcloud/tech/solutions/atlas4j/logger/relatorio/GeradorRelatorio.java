@@ -21,9 +21,8 @@ public class GeradorRelatorio
 	 * <P>Método resposável pela geração de relatório no formato PDF.</P>
 	 * <P>Versão do relatório: 1.0</P>
 	 * */
-	public static byte[] geraPDF( LogData ld, String titulo )
+	public static byte[] geraPDF( LogData ld )
 	{
-		ld.setM_logErrTtl( titulo );
 		RelatorioData relData = IH_Relatorio.geraRelatorio( TipoRelatorio.PDF, ld );
 		
 		return relData.getM_relFileBytes( );
