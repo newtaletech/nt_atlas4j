@@ -24,19 +24,17 @@ public class IH_Relatorio
 	public static RelatorioData geraRelatorio( TipoRelatorio tipo, LogData ld )
 	{
 		RelatorioData relData;
-		
+		Relatorio rel = fabricaRelatorio( ld.getM_logErrTtl( ) );
 		switch ( tipo ) 
 			{
 			case PDF:
 			{
-				Relatorio rel = fabricaRelatorio( ld.getM_logErrTtl( ) );
 				relData = rel.geraPDF( ld );
 				break;
 	
 			}
 			default:
 			{
-				Relatorio rel = fabricaRelatorio( ld.getM_logErrTtl( ) );
 				relData = rel.geraPDF( ld );
 				break;
 			}

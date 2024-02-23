@@ -1,9 +1,14 @@
 package br.com.redcloud.tech.solutions.atlas4j.logger.formatter;
 
+import java.lang.StackWalker.StackFrame;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 
 import br.com.redcloud.tech.solutions.atlas4j.logger.dto.LogData;
 import br.com.redcloud.tech.solutions.atlas4j.logger.enumlog.LogColor;
@@ -13,6 +18,7 @@ public abstract class AtlasLoggerFormatter {
 
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	private static final int CALLING_METHOD_NAME_INDEX = 8;
+	private static String m_methodNameBefore;
 	
 	
 	
@@ -191,7 +197,7 @@ public abstract class AtlasLoggerFormatter {
 		String randomLogId = generateRandomLogId();
 		String callingMethodName = LogColor.ANSI_BLACK.getColorCode() +  
 					LogColor.ANSI_BACKGROUND_YELLOW.getColorCode() 	  +
-					getCallingMethodName() + "()"					  	+
+					getCallingMethodNameToDebugLog() + "()"					  	+
 					LogColor.ANSI_RESET.getColorCode()				  ;				
 		
 		String fullClassPath =  classPackage + "." + className + "#" + callingMethodName; 
@@ -258,13 +264,39 @@ public abstract class AtlasLoggerFormatter {
 	}
 	
 	
-	private static String getCallingMethodName() {
-		StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-		return stacks[stacks.length - 2].getMethodName();
+	private static String getCallingMethodNameToDebugLog() {
+		m_methodNameBefore = "debug";
+		return getCallingMethodName(m_methodNameBefore);
 	}
 	
 	private static String getCallingMethodNameToErrorLog() {
-		StackTraceElement[] stacks = Thread.currentThread().getStackTrace();
-		return stacks[stacks.length - 1].getMethodName();
+		m_methodNameBefore = "error";
+		return getCallingMethodName(m_methodNameBefore);
 	}
+	
+	private static String getCallingMethodName(String methodNameBefore) {
+
+		StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+		
+		int index = walker.walk(stack -> { 
+			List<StackFrame> stackList = stack.toList();
+			int value = 0;
+		    for (int i = 0; i < stackList.size(); i++) {
+		        if (stackList.get(i).getMethodName().equals(m_methodNameBefore)) {
+		        	value = i;
+		        }
+		    }
+			return value;
+		});
+		
+		String methodName = walker.walk(stack -> {
+			String value = stack
+					.skip(index + 1)
+					.findFirst().map(StackFrame::getMethodName).orElse(null);
+			return value;
+		});
+		
+		return methodName;
+	}
+	
 }
